@@ -9,7 +9,7 @@ TODO:
 + Update database structure to reflect updated ER diagram
 + Update UI 
 
-Features:
+Current Features:
 + Based on your privilege level (public, student, admin, super_admin) you have different abilities.<br>
 + Public members may only view public events. <br>
 + Students may view public events, private university events, and RSO events if they are members of an RSO (Registered Student Organization)<br>
