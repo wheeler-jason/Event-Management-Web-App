@@ -1,5 +1,13 @@
 # Event-Management-Web-App
 Database-driven Web Application written for Databases class<br>
+TODO: 
++ Add Google Maps integration for events
++ Add RSS Feed integration for university events
++ Add user profiles
++ Add ability to comment on and rate events
++ Add ability to share events on social media
++ Update database structure to reflect updated ER diagram
++ Update UI 
 
 Features:
 + Based on your privilege level (public, student, admin, super_admin) you have different abilities.<br>
