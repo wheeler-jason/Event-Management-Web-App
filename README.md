@@ -15,7 +15,7 @@ Current Features:
 + Students may view public events, private university events, and RSO events if they are members of an RSO (Registered Student Organization)<br>
 + Students may also join RSO's and create RSO's if they have enough prospective members at their university.
 + Admins are creators of RSO's. They can do everything that students can do as well as create new RSO events.
-+ The super admin is the application's supervisor. They approve new RSO's and university events. 
++ The super admin is the application's supervisor. They can create new participating universities and approve new RSO's and university events. 
 
 
 ![GUI image](/eventSiteProject/GUI_screenshots/studentDashboard.png)
