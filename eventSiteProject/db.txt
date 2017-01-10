@@ -1,0 +1,104 @@
+CREATE TABLE `users` (
+  `userid` varchar(24) NOT NULL,
+  `password` varchar(45) NOT NULL,
+  `user_type` enum("s","a","sa","u") NOT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`userid`)
+); 
+___________________________________________________
+CREATE TABLE `university` (
+  `name` varchar(60) NOT NULL,
+  `rss_url` varchar(200) DEFAULT NULL,
+  `description` varchar(200) DEFAULT NULL,
+  `num_students` varchar(10) DEFAULT NULL,
+  `location` varchar(60) NOT NULL,
+  `image_url` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`name`)
+);
+
+___________________________________________________
+CREATE TABLE `super_admin` (
+  `sadmin_id` varchar(24) NOT NULL,
+  PRIMARY KEY (`sadmin_id`),
+  CONSTRAINT `SAid` FOREIGN KEY (`sadmin_id`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE DEFINER=`root`@`localhost` TRIGGER update_user_type_sa BEFORE INSERT ON `super_admin` 
+FOR EACH ROW
+BEGIN
+    update users
+    set user_type = 'sa'
+    where userid = NEW.sadmin_id;
+END// 
+___________________________________________________
+CREATE TABLE `student` (
+  `student_id` varchar(24) NOT NULL,
+  `university` int(15) NOT NULL,
+  PRIMARY KEY (`student_id`),
+  KEY `part_ofU_idx` (`university`),
+  CONSTRAINT `S_Uni` FOREIGN KEY (`university`) REFERENCES `university` (`university_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `Sid` FOREIGN KEY (`student_id`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE DEFINER=`root`@`localhost` TRIGGER update_user_type_S BEFORE INSERT ON `student` 
+FOR EACH ROW
+BEGIN
+    update users
+    set user_type = "s"
+    where userid = NEW.student_id;
+END//
+
+___________________________________________________
+CREATE TABLE `admin` (
+  `admin_id` varchar(24) NOT NULL,
+  `university` varchar(45) NOT NULL,
+  PRIMARY KEY (`admin_id`),
+  KEY `Uni_A_idx` (`university`),
+  CONSTRAINT `A_Uni` FOREIGN KEY (`university`) REFERENCES `university` (`university_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `Aid` FOREIGN KEY (`admin_id`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE DEFINER=`root`@`localhost` TRIGGER update_user_type_a BEFORE INSERT ON `admin` 
+FOR EACH ROW
+BEGIN
+    update users
+    set user_type = "a"
+    where userid = NEW.admin_id;
+END//
+___________________________________________________
+CREATE TABLE `rso` (
+  `name` varchar(60) NOT NULL,
+  `owned_by` varchar(60) NOT NULL,
+  `university` varchar(60) NOT NULL,
+  PRIMARY KEY (`name`),
+  KEY `owned_by_idx` (`owned_by`),
+  CONSTRAINT `owned_by` FOREIGN KEY (`owned_by`) REFERENCES `admin` (`admin_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+___________________________________________________
+CREATE TABLE `event` (
+  `name` varchar(45) NOT NULL,
+  `date` varchar(45) DEFAULT NULL,
+  `category` varchar(45) DEFAULT NULL,
+  `location` varchar(45) DEFAULT NULL,
+  `description` varchar(45) DEFAULT NULL,
+  `phone` varchar(45) DEFAULT NULL,
+  `time` varchar(45) DEFAULT NULL,
+  `event_type` enum("Public", "Private", "RSO") NOT NULL,
+  `email` varchar(45) DEFAULT NULL,
+  `approved` boolean DEFAULT FALSE,
+  `created_by` varchar(24) NOT NULL,
+  `rso_name` varchar(50) DEFAULT NULL,
+  `university` varchar(60) NOT NULL, 
+  PRIMARY KEY (`name`),
+  KEY `created_by_eventA_idx` (`created_by`),
+  CONSTRAINT `created_by_eventA` FOREIGN KEY (`created_by`) REFERENCES `admin` (`admin_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+___________________________________________________
+CREATE TABLE `member` (
+  `student_id` varchar(24) NOT NULL,
+  `rso` varchar(24) NOT NULL,
+  PRIMARY KEY (`student_id`,`rso`),
+  KEY `rso_name_rso_idx` (`rso`),
+  CONSTRAINT `rso_name_rso` FOREIGN KEY (`rso`) REFERENCES `rso` (`name`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `student_id_rso` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
